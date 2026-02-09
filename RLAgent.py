@@ -10,10 +10,10 @@ class RLAgent:
     def __init__(self, model, encoder, epsilon=0.1):
         self.model = model
         self.encoder = encoder
-        self.epsilon = epsilon # Exploration rate
+        self.epsilon = epsilon
         self.optimizer = optim.Adam(self.model.parameters(), lr=0.001)
         self.criterion = nn.MSELoss()
-        self.memory = deque(maxlen=10000)  # Increased memory size
+        self.memory = deque(maxlen=10000)
         self.batch_size = 32
 
     def get_action(self, state, player_idx, training=False):
@@ -59,14 +59,12 @@ class RLAgent:
                 with torch.no_grad():
                     target = reward + 0.95 * torch.max(self.model(next_state_tensor)).item()
             
-            # Get current Q-values
             current_qs = self.model(state_tensor).detach().clone()
-            current_qs[action_id] = target # Update only the played card
+            current_qs[action_id] = target
             
             states.append(state_tensor.numpy())
             targets.append(current_qs.numpy())
 
-        # Train Step
         input_batch = torch.FloatTensor(np.array(states))
         target_batch = torch.FloatTensor(np.array(targets))
         

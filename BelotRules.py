@@ -25,7 +25,6 @@ class BelotRules:
     def get_trick_winner(trick_starter, trick, contract):
         if not trick: return None, None
         
-        lead_card = trick[0]
         best_play = trick[0]
         winner = trick_starter
         

@@ -91,6 +91,23 @@ def train_agent(episodes=100, save_path='belot_model.pth'):
             team = pid % 2
             
             reward = exp['trick_rewards'][team]
+            
+            # penalize playing high cards when your team is not winning
+            if len(exp['state'].current_trick) >= 1:
+                partner_idx = (pid + 2) % 4
+                current_winner_idx, _ = BelotRules.get_trick_winner(
+                    exp['state'].trick_starter,
+                    exp['state'].current_trick, 
+                    exp['state'].contract
+                )
+                
+                if current_winner_idx != partner_idx and current_winner_idx != pid:
+                    card_played = [c for c in exp['state'].hands[pid] if c.id == exp['action_id']][0]
+                    card_value = BelotRules.get_points(card_played, exp['state'].contract)
+                    
+                    if card_value >= 10:
+                        reward -= 10
+                        
             if exp['done']:
                 reward += game_bonus[team]
             
@@ -107,7 +124,7 @@ def train_agent(episodes=100, save_path='belot_model.pth'):
             agent.replay()
             
         if e % 100 == 0:
-            agent.epsilon = max(0.05, agent.epsilon * 0.95)
+            agent.epsilon = max(0.05, agent.epsilon * 0.85)
             print(f"Episode {e}/{episodes} | Final Score: Team0={final_scores[0]} Team1={final_scores[1]} | Epsilon: {agent.epsilon:.3f}")
         
         if (e + 1) % 1000 == 0:
@@ -170,7 +187,7 @@ if __name__ == "__main__":
     choice = input("\nYour choice (1/2): ").strip()
     
     if choice == "1":
-        agent = train_agent(episodes=50000, save_path='belot_model.pth')
+        agent = train_agent(episodes=5000, save_path='belot_model.pth')
         play_vs_ai(agent)
 
     elif choice == "2":
