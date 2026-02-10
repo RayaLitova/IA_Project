@@ -180,7 +180,7 @@ def play_vs_ai(ai_agent):
     else:
         print("It's a DRAW!")
 
-if __name__ == "__main__":
+if __name__ == "__main__":    
     print("\n1. Train new model")
     print("2. Load model and play")
     

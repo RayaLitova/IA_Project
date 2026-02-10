@@ -1,6 +1,6 @@
-SUITS = ['♠', '♦', '♥', '♣'] # Spades, Diamonds, Hearts, Clubs
+SUITS = ['♠', '♥', '♦', '♣'] # Spades, Diamonds, Hearts, Clubs
 RANKS = ['7', '8', '9', '10', 'J', 'Q', 'K', 'A']
-CONTRACTS = ['AT', 'NT', '♠', '♦', '♥', '♣'] # All Trump, No Trump, Suits
+CONTRACTS = ['AT', 'NT', '♠', '♥', '♦', '♣'] # All Trump, No Trump, Suits
 
 CARD_TO_ID = {f"{r}{s}": i for i, (s, r) in enumerate([(s, r) for s in SUITS for r in RANKS])}
 ID_TO_CARD = {v: k for k, v in CARD_TO_ID.items()}

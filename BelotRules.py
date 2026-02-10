@@ -1,4 +1,4 @@
-from Card import ORDER, VALUES, SUITS
+from Card import ORDER, VALUES
 
 class BelotRules:
     @staticmethod
