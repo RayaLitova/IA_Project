@@ -60,9 +60,9 @@ class BelotRules:
         if same_suit and (contract == lead_suit or contract == "AT"):
             highest_rank = 0
             for c in trick:
-                if VALUES["AT"][c.rank] > highest_rank and c.suit == lead_suit: 
-                    highest_rank = VALUES["AT"][c.rank]
-            higher = [c for c in same_suit if VALUES["AT"][c.rank] > highest_rank]
+                if BelotRules.get_power(c, contract) > highest_rank and c.suit == lead_suit: 
+                    highest_rank = BelotRules.get_power(c, contract)
+            higher = [c for c in same_suit if BelotRules.get_power(c, contract) > highest_rank]
             if higher: 
                 return higher
             return same_suit 
@@ -76,8 +76,8 @@ class BelotRules:
         played_trumps = [c for c in trick if c.suit == contract]
         highest_trump = 0
         for c in played_trumps:
-            highest_trump = max(VALUES["AT"][c.rank], highest_trump)
-        trumps = [c for c in hand if c.suit == contract and VALUES["AT"][c.rank] > highest_trump]
+            highest_trump = max(BelotRules.get_power(c, contract), highest_trump)
+        trumps = [c for c in hand if c.suit == contract and BelotRules.get_power(c, contract) > highest_trump]
         if trumps:
             return trumps
 
