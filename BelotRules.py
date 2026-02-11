@@ -1,4 +1,4 @@
-from Card import ORDER, VALUES
+from Card import ORDER, VALUES, CONTRACTS
 
 class BelotRules:
     @staticmethod
@@ -82,3 +82,15 @@ class BelotRules:
             return trumps
 
         return hand
+
+    def get_legal_bids(current_bids):
+        bids_count = len(current_bids)
+        if bids_count >= 4 and current_bids[bids_count - 3:] == ["Pass"] * 3:
+            return []
+        
+        filtered_bids = [b for b in current_bids if b != "Pass"]
+        if not filtered_bids: 
+            return CONTRACTS + ["Pass"]
+        
+        index = CONTRACTS.index(filtered_bids[-1])
+        return CONTRACTS[:index] + ["Pass"]

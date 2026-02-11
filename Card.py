@@ -1,4 +1,4 @@
-SUITS = ['♠', '♥', '♦', '♣'] # Spades, Diamonds, Hearts, Clubs
+SUITS = ['♠', '♥', '♦', '♣'] # Spades, Hearts, Diamonds, Clubs
 RANKS = ['7', '8', '9', '10', 'J', 'Q', 'K', 'A']
 CONTRACTS = ['AT', 'NT', '♠', '♥', '♦', '♣'] # All Trump, No Trump, Suits
 
