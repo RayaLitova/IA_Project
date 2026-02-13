@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from GameAgent.BelotState import GameState
 from Belot.Card import Card, SUITS, RANKS, CONTRACTS
 from GameAgent import BelotRLAgent
+from BaseClasses.RLAgentPersist import RLAgentPersist
 
 app = Flask(__name__)
 
@@ -26,7 +27,7 @@ def process_data():
                     [data['team_scores']['team1'], data['team_scores']['team2']]
     )
     agent = BelotRLAgent()
-    agent.load('models/game/belot_model.pth')
+    RLAgentPersist.load(agent, 'models/game/belot_model.pth')
     card = agent.get_action(state, data['player_idx'])
     return jsonify({'rank': RANKS.index(card.rank), 'suit': SUITS.index(card.suit)})
 

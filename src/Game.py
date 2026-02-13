@@ -6,6 +6,9 @@ from Belot.Card import CONTRACTS, RANKS, SUITS, Card
 from BidAgent.BidRLAgent import BidRLAgent
 from GameAgent.BelotRLAgent import BelotRLAgent
 from GameAgent.BelotState import GameState
+from BaseClasses.RLAgentPersist import RLAgentPersist
+from BidAgent.BidRLAgentTrain import BidRLAgentTrain
+from GameAgent.BelotRLAgentTrain import BelotRLAgentTrain
 
 class Game:
     def start(self):
@@ -42,9 +45,10 @@ class Game:
     def play(self, train : bool = False, hands : list[Card] = None, contract : str = None) -> None:
         agent = BelotRLAgent()
         if train:
-            agent.train(20000, "models/game/belot_model.pth")
+            trainer = BelotRLAgentTrain(agent)
+            trainer.train(20000, "models/game/belot_model.pth")
         else:
-            agent.load("models/game/belot_model.pth")
+            RLAgentPersist.load(agent, "models/game/belot_model.pth")
             
         if not hands:   
             deck = [Card(r, s) for s in SUITS for r in RANKS]
@@ -97,12 +101,13 @@ class Game:
             
     def play_with_bid(self, train : bool = False) -> None:
         belot_agent = BelotRLAgent()
-        belot_agent.load("models/game/belot_model.pth")
-        bid_agent = BidRLAgent(belot_agent)
+        RLAgentPersist.load(belot_agent, "models/game/belot_model.pth")
+        bid_agent = BidRLAgent()
         if train:
-            bid_agent.train(20000, "models/bid/bid_model.pth")
+            trainer = BidRLAgentTrain(bid_agent, belot_agent)
+            trainer.train(20000, "models/bid/bid_model.pth")
         else:
-            bid_agent.load("models/bid/bid_model.pth")
+            RLAgentPersist.load(bid_agent, "models/bid/bid_model.pth")
         
         deck = [Card(r, s) for s in SUITS for r in RANKS]
         random.shuffle(deck)
