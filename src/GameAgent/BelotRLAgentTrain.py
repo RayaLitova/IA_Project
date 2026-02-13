@@ -1,15 +1,11 @@
 import copy
 import numpy as np
-from Belot.Card import CONTRACTS, ORDER, RANKS, SUITS, Card
+from Belot.Card import RANKS, SUITS, Card
 import random
 import torch
-from BaseClasses.RLAgent import RLAgent
 from Belot.BelotRules import BelotRules
 from Belot.Card import Card
-from GameAgent.BelotStateEncoder import BelotStateEncoder
-from GameAgent.BelotDQN import BelotDQN
 from GameAgent.BelotState import GameState
-from BaseClasses.State import State
 from BaseClasses.RLAgentPersist import RLAgentPersist
 from BaseClasses.RLAgentTrain import RLAgentTrain
 
@@ -59,7 +55,7 @@ class BelotRLAgentTrain(RLAgentTrain):
         for e in range(episodes):
             random.shuffle(deck)
             hands = {i: sorted(deck[i*8:(i+1)*8], key=lambda c: c.id) for i in range(4)}
-            contract = random.choice(CONTRACTS)
+            contract = random.choice(BelotRules.CONTRACTS)
             
             state = GameState(contract, hands)
             game_experiences = []
@@ -144,7 +140,7 @@ class BelotRLAgentTrain(RLAgentTrain):
                             reward += 3
                 
                 is_trump = (exp['state'].contract == "AT" or exp['state'].contract == card_played.suit)
-                order = ORDER["AT"] if is_trump else ORDER["NT"]
+                order = BelotRules.ORDER["AT"] if is_trump else BelotRules.ORDER["NT"]
                 
                 if card_played.rank == order[-1]:
                     second_highest = Card(rank=order[-2], suit=card_played.suit)

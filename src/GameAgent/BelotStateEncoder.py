@@ -1,7 +1,6 @@
 import numpy as np
 from torch import FloatTensor
 from BaseClasses.StateEncoder import StateEncoder
-from Belot.Card import CONTRACTS
 from Belot.BelotRules import BelotRules
 from BaseClasses.State import State
 
@@ -24,8 +23,8 @@ class BelotStateEncoder(StateEncoder):
             trick_vec[card.id] = 1
             
         contract_vec = np.zeros(6)
-        if state.contract in CONTRACTS:
-            c_idx = CONTRACTS.index(state.contract)
+        if state.contract in BelotRules.CONTRACTS:
+            c_idx = BelotRules.CONTRACTS.index(state.contract)
             contract_vec[c_idx] = 1
 
         winner_vec = np.zeros(4)  # One-hot: which player is winning

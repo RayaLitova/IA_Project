@@ -3,7 +3,6 @@ import torch
 from BaseClasses.RLAgent import RLAgent
 from BaseClasses.State import State 
 from Belot.BelotRules import BelotRules
-from Belot.Card import CONTRACTS
 from BidAgent.BidDQN import BidDQN
 from BidAgent.BidStateEncoder import BidStateEncoder
 
@@ -22,7 +21,7 @@ class BidRLAgent(RLAgent):
         with torch.no_grad():
             q_values = self.model(state_tensor)
 
-        legal_ids = [6 if c == "Pass" else CONTRACTS.index(c) for c in legal_bids]
+        legal_ids = [6 if c == "Pass" else BelotRules.CONTRACTS.index(c) for c in legal_bids]
         mask = torch.full_like(q_values, -float('inf'))
         mask[legal_ids] = 0
         
@@ -31,5 +30,5 @@ class BidRLAgent(RLAgent):
         
         for b in legal_ids:
             if b == best_bid_id:
-                return "Pass" if b == 6 else CONTRACTS[b]
+                return "Pass" if b == 6 else BelotRules.CONTRACTS[b]
         return legal_bids[0]

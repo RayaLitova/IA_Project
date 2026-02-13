@@ -1,6 +1,16 @@
-from Belot.Card import ORDER, VALUES, CONTRACTS, Card
+from Belot.Card import Card
 
 class BelotRules:
+    CONTRACTS = ['AT', 'NT', '♠', '♥', '♦', '♣'] # All Trump, No Trump, Suits
+    VALUES = {
+        'NT': {'7':0, '8':0, '9':0, 'J':2, 'Q':3, 'K':4, '10':10, 'A':11},
+        'AT': {'7':0, '8':0, 'Q':3, 'K':4, '10':10, 'A':11, '9':14, 'J':20}
+    }
+    ORDER = {
+        'NT': ['7', '8', '9', 'J', 'Q', 'K', '10', 'A'],
+        'AT': ['7', '8', 'Q', 'K', '10', 'A', '9', 'J']
+    }
+    
     @staticmethod
     def get_mode(contract : str, card_suit : str) -> str:
         if contract == 'AT': return 'AT'
@@ -11,12 +21,12 @@ class BelotRules:
     @staticmethod
     def get_power(card : Card, contract : str) -> int:
         mode = BelotRules.get_mode(contract, card.suit)
-        return ORDER[mode].index(card.rank)
+        return BelotRules.ORDER[mode].index(card.rank)
 
     @staticmethod
     def get_points(card : Card, contract : str) -> int:
         mode = BelotRules.get_mode(contract, card.suit)
-        return VALUES[mode][card.rank]
+        return BelotRules.VALUES[mode][card.rank]
 
     def get_partner(player : int) -> int:
         return (player + 2) % 4
@@ -90,7 +100,7 @@ class BelotRules:
         
         filtered_bids = [b for b in current_bids if b != "Pass"]
         if not filtered_bids: 
-            return CONTRACTS + ["Pass"]
+            return BelotRules.CONTRACTS + ["Pass"]
         
-        index = CONTRACTS.index(filtered_bids[-1])
-        return CONTRACTS[:index] + ["Pass"]
+        index = BelotRules.CONTRACTS.index(filtered_bids[-1])
+        return BelotRules.CONTRACTS[:index] + ["Pass"]

@@ -1,6 +1,6 @@
 from BaseClasses.StateEncoder import StateEncoder
 import numpy as np
-from Belot.Card import CONTRACTS
+from Belot.BelotRules import BelotRules
 from torch import FloatTensor
 from BaseClasses.State import State
 
@@ -19,8 +19,8 @@ class BidStateEncoder(StateEncoder):
         current_bids_vec = np.zeros(12)
         # presence
         for b in state.played_moves:
-            if b != "Pass" and b in CONTRACTS:
-                idx = CONTRACTS.index(b)
+            if b != "Pass" and b in BelotRules.CONTRACTS:
+                idx = BelotRules.CONTRACTS.index(b)
                 current_bids_vec[idx] = 1
 
         # last non-pass one-hot
@@ -29,8 +29,8 @@ class BidStateEncoder(StateEncoder):
             if b != "Pass":
                 last_non_pass = b
                 break
-        if last_non_pass and last_non_pass in CONTRACTS:
-            current_bids_vec[6 + CONTRACTS.index(last_non_pass)] = 1
+        if last_non_pass and last_non_pass in BelotRules.CONTRACTS:
+            current_bids_vec[6 + BelotRules.CONTRACTS.index(last_non_pass)] = 1
 
         full_vec = np.concatenate([hand_vec, current_bids_vec])
         return FloatTensor(full_vec)

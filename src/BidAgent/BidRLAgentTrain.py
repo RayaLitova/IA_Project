@@ -6,7 +6,8 @@ import torch
 from BaseClasses.RLAgentTrain import RLAgentTrain
 from BaseClasses.RLAgentPersist import RLAgentPersist
 from BaseClasses.State import State
-from Belot.Card import Card, CONTRACTS, RANKS, SUITS
+from Belot.Card import RANKS, SUITS, Card
+from Belot.BelotRules import BelotRules
 from GameAgent.BelotState import GameState
 from BidAgent.BidRLAgent import BidRLAgent
 from GameAgent.BelotRLAgent import BelotRLAgent
@@ -46,7 +47,7 @@ class BidRLAgentTrain(RLAgentTrain):
         print("Starting fresh training with curriculum learning")
         
         deck = [Card(r, s) for s in SUITS for r in RANKS]
-        biddable_contracts = [c for c in CONTRACTS if c != "Pass"]
+        biddable_contracts = [c for c in BelotRules.CONTRACTS if c != "Pass"]
         
         total_rewards = []
         win_count = 0
@@ -120,7 +121,7 @@ class BidRLAgentTrain(RLAgentTrain):
                 if forced_bid:
                     reward -= 20
                 
-                action_id = 6 if contract == "Pass" else CONTRACTS.index(contract)
+                action_id = 6 if contract == "Pass" else BelotRules.CONTRACTS.index(contract)
                 self.remember((bid_curr_state_obj, action_id, reward, player))
                 
                 total_rewards.append(reward)

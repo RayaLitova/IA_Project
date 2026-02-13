@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from GameAgent.BelotState import GameState
-from Belot.Card import Card, SUITS, RANKS, CONTRACTS
+from Belot.Card import RANKS, SUITS, Card
+from Belot.BelotRules import BelotRules
 from GameAgent import BelotRLAgent
 from BaseClasses.RLAgentPersist import RLAgentPersist
 
@@ -18,7 +19,7 @@ def process_data():
     if data['contract'] == 2:
         contract = SUITS[data['trump_suit']]
     else:
-        contract = CONTRACTS[data['contract']]
+        contract = BelotRules.CONTRACTS[data['contract']]
     state = GameState(contract, 
                     [process_cards(data['hand0']), process_cards(data['hand1']), process_cards(data['hand2']), process_cards(data['hand3'])],
                     process_cards(data['played_cards']), 

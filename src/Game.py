@@ -2,7 +2,7 @@ import random
 import time
 from BaseClasses.State import State
 from Belot.BelotRules import BelotRules
-from Belot.Card import CONTRACTS, RANKS, SUITS, Card
+from Belot.Card import RANKS, SUITS, Card
 from BidAgent.BidRLAgent import BidRLAgent
 from GameAgent.BelotRLAgent import BelotRLAgent
 from GameAgent.BelotState import GameState
@@ -60,7 +60,7 @@ class Game:
             print("Available contracts: 0:AT, 1:NT, 2:♠, 3:♦, 4:♥, 5:♣")
             try:
                 c_idx = int(input("Choose contract: "))
-                contract = CONTRACTS[c_idx]
+                contract = BelotRules.CONTRACTS[c_idx]
             except:
                 contract = 'AT'
         
@@ -121,7 +121,7 @@ class Game:
                 print("Available contracts: 0:AT, 1:NT, 2:♠, 3:♦, 4:♥, 5:♣, 6:Pass")
                 try:
                     c_idx = int(input("Choose contract: "))
-                    contract = "Pass" if c_idx == 6 else CONTRACTS[c_idx]
+                    contract = "Pass" if c_idx == 6 else BelotRules.CONTRACTS[c_idx]
                 except:
                     contract = 'AT'
                 bid_state.played_moves += [contract]
