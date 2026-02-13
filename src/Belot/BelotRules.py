@@ -1,28 +1,28 @@
-from Belot.Card import ORDER, VALUES, CONTRACTS
+from Belot.Card import ORDER, VALUES, CONTRACTS, Card
 
 class BelotRules:
     @staticmethod
-    def get_mode(contract, card_suit):
+    def get_mode(contract : str, card_suit : str) -> str:
         if contract == 'AT': return 'AT'
         if contract == 'NT': return 'NT'
         if contract == card_suit: return 'AT'
         return 'NT'
 
     @staticmethod
-    def get_power(card, contract):
+    def get_power(card : Card, contract : str) -> int:
         mode = BelotRules.get_mode(contract, card.suit)
         return ORDER[mode].index(card.rank)
 
     @staticmethod
-    def get_points(card, contract):
+    def get_points(card : Card, contract : str) -> int:
         mode = BelotRules.get_mode(contract, card.suit)
         return VALUES[mode][card.rank]
 
-    def get_partner(player):
+    def get_partner(player : int) -> int:
         return (player + 2) % 4
     
     @staticmethod
-    def get_trick_winner(trick_starter, trick, contract):
+    def get_trick_winner(trick_starter : int, trick : list[Card], contract : str) -> int:
         if not trick: return None, None
         
         best_play = trick[0]
@@ -52,7 +52,7 @@ class BelotRules:
         return (winner, best_play)
 
     @staticmethod
-    def get_valid_moves(player, hand, trick_starter, trick, contract):
+    def get_valid_moves(player : int, hand : list[Card], trick_starter : int, trick : list[Card], contract : str) -> list[Card]:
         if not trick: return hand
         lead_suit = trick[0].suit
 
@@ -83,7 +83,7 @@ class BelotRules:
 
         return hand
 
-    def get_legal_bids(current_bids):
+    def get_legal_bids(current_bids : list[str]) -> list[str]:
         bids_count = len(current_bids)
         if bids_count >= 4 and current_bids[bids_count - 3:] == ["Pass"] * 3:
             return []

@@ -1,8 +1,11 @@
+from Belot.Card import Card
+
+
 class State:
-    def __init__(self, hands, starting_player, played_moves = None):
+    def __init__(self, hands : list[Card], starting_player : int, played_moves : list[Card] = None):
         self.hands = hands 
         self.starting_player = starting_player
         self.played_moves = played_moves
         
-    def get_current_player(self):
+    def get_current_player(self) -> int:
         return (self.starting_player + len(self.played_moves)) % 4

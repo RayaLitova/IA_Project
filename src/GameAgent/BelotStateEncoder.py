@@ -3,13 +3,14 @@ from torch import FloatTensor
 from BaseClasses.StateEncoder import StateEncoder
 from Belot.Card import CONTRACTS
 from Belot.BelotRules import BelotRules
+from BaseClasses.State import State
 
 class BelotStateEncoder(StateEncoder):
     def __init__(self):
         # My Hand (32) + Played Cards (32) + Current Trick (32) + Contract (6) + Winner (4)
         super().__init__(32 + 32 + 32 + 6 + 4)
 
-    def encode(self, state, player_idx):
+    def encode(self, state : State, player_idx : int) -> FloatTensor:
         hand_vec = np.zeros(32)
         for card in state.hands[player_idx]:
             hand_vec[card.id] = 1

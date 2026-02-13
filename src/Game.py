@@ -39,7 +39,7 @@ class Game:
         else:
             print("Invalid choice. Run the script again.")
             
-    def play(self, train = False, hands = None, contract = None):
+    def play(self, train : bool = False, hands : list[Card] = None, contract : str = None) -> None:
         agent = BelotRLAgent()
         if train:
             agent.train(20000, "models/game/belot_model.pth")
@@ -95,7 +95,7 @@ class Game:
             print("It's a DRAW!")
         
             
-    def play_with_bid(self, train = False):
+    def play_with_bid(self, train : bool = False) -> None:
         belot_agent = BelotRLAgent()
         belot_agent.load("models/game/belot_model.pth")
         bid_agent = BidRLAgent(belot_agent)

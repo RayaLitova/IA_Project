@@ -15,7 +15,7 @@ ORDER = {
 }
 
 class Card:
-    def __init__(self, rank, suit):
+    def __init__(self, rank : str, suit : str):
         self.rank = rank
         self.suit = suit
         self.str_rep = f"{rank}{suit}"

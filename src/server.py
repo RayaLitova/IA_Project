@@ -5,7 +5,7 @@ from GameAgent import BelotRLAgent
 
 app = Flask(__name__)
 
-def process_cards(cards):
+def process_cards(cards : list[str]) -> list[Card]:
     cards_res = []
     for i in range(0, len(cards['suit'])):
         cards_res.append(Card(RANKS[cards['rank'][i]], SUITS[cards['suit'][i]]))

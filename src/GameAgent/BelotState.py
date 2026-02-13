@@ -1,9 +1,10 @@
 import copy
 from BaseClasses.State import State
 from Belot.BelotRules import BelotRules
+from Belot.Card import Card
 
 class GameState(State):
-    def __init__(self, contract, hands, played_cards=None, played_moves=None, starting_player=0, scores=None):
+    def __init__(self, contract : str, hands : list[Card], played_cards : list[Card] = None, played_moves : list[Card] = None, starting_player : int = 0, scores : list[int] = None):
         self.contract = contract
         self.hands = hands 
         self.played_cards = played_cards if played_cards else set()
@@ -11,10 +12,10 @@ class GameState(State):
         self.starting_player = starting_player
         self.scores = scores if scores else [0, 0] # [Team 0 (0&2), Team 1 (1&3)]    
 
-    def is_terminal(self):
+    def is_terminal(self) -> bool:
         return len(self.hands[0]) == 0 and len(self.played_moves) == 0
 
-    def apply_move(self, card):
+    def apply_move(self, card : Card) -> tuple[State, list[int]]:
         player = self.get_current_player()
         
         new_hands = copy.deepcopy(self.hands)

@@ -9,13 +9,14 @@ from Belot.Card import CONTRACTS, RANKS, SUITS, Card
 from BidAgent.BidDQN import BidDQN
 from BidAgent.BidStateEncoder import BidStateEncoder
 from GameAgent.BelotState import GameState
+from GameAgent.BelotRLAgent import BelotRLAgent
 
 class BidRLAgent(RLAgent):
-    def __init__(self, belot_agent):
+    def __init__(self, belot_agent : BelotRLAgent):
         super().__init__(BidDQN(44, 7), BidStateEncoder(), epsilon = 0.9)
         self.belot_agent = belot_agent
         
-    def get_action(self, state, player_idx, training=False):
+    def get_action(self, state : State, player_idx : int, training : bool = False) -> str:
         legal_bids = BelotRules.get_legal_bids(state.played_moves)
         if not legal_bids: 
             return
@@ -38,9 +39,7 @@ class BidRLAgent(RLAgent):
                 return "Pass" if b == 6 else CONTRACTS[b]
         return legal_bids[0]
 
-    #remember: state, action_id, reward, player_idx
-
-    def replay(self):
+    def replay(self) -> None:
         if len(self.memory) < self.batch_size:
             return
         
@@ -65,7 +64,7 @@ class BidRLAgent(RLAgent):
         loss.backward()
         self.optimizer.step()
     
-    def train(self, episodes, save_path):
+    def train(self, episodes : int, save_path : str) -> None:
         print(f"Training Bid Neural Network for {episodes} games...")
         print("Starting fresh training with curriculum learning")
         

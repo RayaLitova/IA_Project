@@ -8,12 +8,13 @@ from Belot.Card import CONTRACTS, ORDER, RANKS, SUITS, Card
 from GameAgent.BelotStateEncoder import BelotStateEncoder
 from GameAgent.BelotDQN import BelotDQN
 from GameAgent.BelotState import GameState
+from BaseClasses.State import State
 
 class BelotRLAgent(RLAgent):
     def __init__(self):
         super().__init__(BelotDQN(106, 32), BelotStateEncoder(), epsilon = 0.1)
         
-    def get_action(self, state, player_idx, training=False):
+    def get_action(self, state : State, player_idx : int, training : bool = False) -> Card:
         legal_moves = BelotRules.get_valid_moves(player_idx, state.hands[player_idx], state.starting_player, state.played_moves, state.contract)
         
         if training and random.random() < self.epsilon:
@@ -35,7 +36,7 @@ class BelotRLAgent(RLAgent):
                 return c
         return legal_moves[0]
 
-    def replay(self):
+    def replay(self) -> None:
         if len(self.memory) < self.batch_size:
             return
         
@@ -67,7 +68,7 @@ class BelotRLAgent(RLAgent):
         loss.backward()
         self.optimizer.step()
         
-    def train(self, episodes, save_path):
+    def train(self, episodes : int, save_path : str) -> None:
         print(f"Training Neural Network for {episodes} games...")
         print("Team Setup: Player 0 (You) & Player 2 (Friendly AI) vs Player 1 & Player 3 (Opponents)")
         

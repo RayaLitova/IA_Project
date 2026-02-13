@@ -1,7 +1,7 @@
 import torch.nn as nn
 
 class DQN(nn.Module):
-    def __init__(self, input_size, initial_out, output_size):
+    def __init__(self, input_size : int, initial_out : int, output_size : int):
         super().__init__()
         self.fc1 = nn.Linear(input_size, initial_out)
         self.relu = nn.ReLU()
