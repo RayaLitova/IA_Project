@@ -1,6 +1,5 @@
 from Belot.Card import Card
 
-
 class State:
     def __init__(self, hands : list[Card], starting_player : int, played_moves : list[Card] = None):
         self.hands = hands 

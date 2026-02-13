@@ -1,6 +1,7 @@
 import torch.nn as nn
+from abc import ABC
 
-class DQN(nn.Module):
+class DQN(nn.Module, ABC):
     def __init__(self, input_size : int, initial_out : int, output_size : int):
         super().__init__()
         self.fc1 = nn.Linear(input_size, initial_out)

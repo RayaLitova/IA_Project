@@ -6,8 +6,9 @@ from collections import deque
 from BaseClasses.State import State
 from BaseClasses.DQN import DQN
 from BaseClasses.StateEncoder import StateEncoder
+from abc import ABC, abstractmethod
 
-class RLAgent:
+class RLAgent(ABC):
     def __init__(self, model : DQN, encoder : StateEncoder, epsilon=0.1, batch_size = 32):
         self.model = model
         self.encoder = encoder
@@ -16,13 +17,15 @@ class RLAgent:
         self.criterion = nn.MSELoss()
         self.memory = deque(maxlen=10000)
         self.batch_size = batch_size
-
+        
+    @abstractmethod
     def get_action(self, state : State, player_idx : int, training = False):
         pass
-        
+    
     def remember(self, new_memory : list) -> None:
         self.memory.append(new_memory)
 
+    @abstractmethod
     def replay(self) -> None:
         pass
     
@@ -46,5 +49,6 @@ class RLAgent:
         
         print(f"Model loaded from {filepath} (epsilon={checkpoint.get('epsilon', 0.1):.3f})")
     
+    @abstractmethod
     def train(self, episodes : int, save_path : str) -> None:
         pass
