@@ -9,6 +9,8 @@ from GameAgent.BelotState import GameState
 from BaseClasses.RLAgentPersist import RLAgentPersist
 from BidAgent.BidRLAgentTrain import BidRLAgentTrain
 from GameAgent.BelotRLAgentTrain import BelotRLAgentTrain
+from GameAgent.BelotTrainRewards import BelotTrainFinalRewards, BelotTrainRewards
+from BidAgent.BidTrainRewards import BidTrainFinalRewards, BidTrainRewards
 
 class Game:
     def start(self):
@@ -45,7 +47,7 @@ class Game:
     def play(self, train : bool = False, hands : list[Card] = None, contract : str = None) -> None:
         agent = BelotRLAgent()
         if train:
-            trainer = BelotRLAgentTrain(agent)
+            trainer = BelotRLAgentTrain(agent, BelotTrainRewards, BelotTrainFinalRewards)
             trainer.train(20000, "models/game/belot_model.pth")
         else:
             RLAgentPersist.load(agent, "models/game/belot_model.pth")
@@ -104,7 +106,7 @@ class Game:
         RLAgentPersist.load(belot_agent, "models/game/belot_model.pth")
         bid_agent = BidRLAgent()
         if train:
-            trainer = BidRLAgentTrain(bid_agent, belot_agent)
+            trainer = BidRLAgentTrain(bid_agent, belot_agent, BidTrainRewards, BidTrainFinalRewards)
             trainer.train(20000, "models/bid/bid_model.pth")
         else:
             RLAgentPersist.load(bid_agent, "models/bid/bid_model.pth")

@@ -11,10 +11,11 @@ from Belot.BelotRules import BelotRules
 from GameAgent.BelotState import GameState
 from BidAgent.BidRLAgent import BidRLAgent
 from GameAgent.BelotRLAgent import BelotRLAgent
+from BaseClasses.RLTrainReward import RLTrainReward, RLTrainRewardFinal
 
 class BidRLAgentTrain(RLAgentTrain): 
-    def __init__(self, bid_agent : BidRLAgent, belot_agent : BelotRLAgent):
-        super().__init__(bid_agent)
+    def __init__(self, bid_agent : BidRLAgent, belot_agent : BelotRLAgent, rewards : list[RLTrainReward], final_rewards : list[RLTrainRewardFinal]):
+        super().__init__(bid_agent, rewards, final_rewards)
         self.belot_agent = belot_agent
         
     def replay(self) -> None:
@@ -50,7 +51,6 @@ class BidRLAgentTrain(RLAgentTrain):
         biddable_contracts = [c for c in BelotRules.CONTRACTS if c != "Pass"]
         
         total_rewards = []
-        win_count = 0
         
         for episode in range(episodes):
             random.shuffle(deck)
@@ -97,26 +97,10 @@ class BidRLAgentTrain(RLAgentTrain):
                     card = self.belot_agent.get_action(game_state, current_player)
                     next_state_tuple = game_state.apply_move(card)
                     game_state, _ = next_state_tuple
-                
-                final_scores = game_state.scores
-                team = player % 2
-                opponent_team = 1 - team
-                
-                team_score = final_scores[team]
-                opponent_score = final_scores[opponent_team]
-                point_diff = team_score - opponent_score
-                
-                if point_diff > 0:
-                    base_reward = 100
-                    margin_bonus = min(point_diff / 5, 50)
-                    reward = base_reward + margin_bonus
-                    win_count += 1
-                elif point_diff < 0:
-                    base_reward = -100
-                    margin_penalty = max(point_diff / 5, -50)
-                    reward = base_reward + margin_penalty
-                else:
-                    reward = 0
+                    
+                reward = 0
+                for reward_class in self.final_rewards:
+                    reward += reward_class.calc_reward(game_state, player)
                 
                 if forced_bid:
                     reward -= 20
@@ -140,10 +124,8 @@ class BidRLAgentTrain(RLAgentTrain):
             
             if episode % 100 == 0:
                 avg_reward = sum(total_rewards[-100:]) / min(len(total_rewards), 100)
-                win_rate = win_count / (episode + 1) * 100
                 print(f"Episode {episode}/{episodes} | "
                     f"Avg Reward: {avg_reward:.1f} | "
-                    f"Win Rate: {win_rate:.1f}% | "
                     f"Epsilon: {self.agent.epsilon:.3f} | "
                     f"Memory: {len(self.memory)}")
             
@@ -151,12 +133,10 @@ class BidRLAgentTrain(RLAgentTrain):
                 checkpoint_path = f"{save_path[:-4]}_ep{episode+1}.pth"
                 RLAgentPersist.save(self, checkpoint_path, episode+1)
         
-        final_win_rate = win_count / episodes * 100
         avg_final_reward = sum(total_rewards[-1000:]) / min(len(total_rewards), 1000)
         
         print("\n" + "="*60)
         print("Training Complete!")
-        print(f"Final Win Rate: {final_win_rate:.1f}%")
         print(f"Final Avg Reward (last 1000): {avg_final_reward:.1f}")
         print(f"Final Epsilon: {self.agent.epsilon:.3f}")
         print("="*60)
