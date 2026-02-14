@@ -15,6 +15,10 @@ from BidAgent.BidDQN import BidDQN
 from BidAgent.BidStateEncoder import BidStateEncoder
 from GameAgent.BelotDQN import BelotDQN
 from GameAgent.BelotStateEncoder import BelotStateEncoder
+from Belot.BidPlayer import BidPlayer
+from BidAgent.BidAIPlayer import BidAIPlayer
+from GameAgent.BelotAIPlayer import BelotAIPlayer
+from Belot.BelotPlayer import BelotPlayer
 
 class Game:
     def start(self):
@@ -50,12 +54,15 @@ class Game:
             
     def play(self, train : bool = False, hands : list[Card] = None, contract : str = None) -> None:
         agent = BelotRLAgent(BelotDQN(106, 32), BelotStateEncoder())
+        players = [BelotPlayer(0), BelotAIPlayer(1, agent, train), BelotAIPlayer(2, agent, train), BelotAIPlayer(3, agent, train)]
+        
         if train:
             trainer = BelotRLAgentTrain(agent, BelotTrainRewards, BelotTrainFinalRewards)
             trainer.train(20000, "models/game/belot_model.pth")
         else:
             RLAgentPersist.load(agent, "models/game/belot_model.pth")
-            
+        
+        # todo
         if not hands:   
             deck = [Card(r, s) for s in SUITS for r in RANKS]
             random.shuffle(deck)
@@ -78,19 +85,9 @@ class Game:
         
         while not state.is_terminal():
             pid = state.get_current_player()
-            
-            if pid == 0: # player
-                legal = BelotRules.get_valid_moves(pid, state.hands[0], state.starting_player, state.played_moves, state.contract)
-                print(f"\nTable: {state.played_moves if state.played_moves else 'Empty'}")
-                print(f"Your Hand: {[f'{i}:{c}' for i,c in enumerate(legal)]}")
-                idx = int(input("Choose card index: "))
-                card = legal[idx]
-            else:
-                card = agent.get_action(state, pid, training=False)
-                player_name = "Partner" if pid == 2 else f"Opponent {pid}"
-                print(f"Player {pid} ({player_name}) plays: {card}")
-                time.sleep(0.3)
-                
+            card = players[pid].get_action(state)
+            print(f"Player {pid} plays: {card}")
+            time.sleep(0.3)
             state, _ = state.apply_move(card)
             
             if len(state.played_moves) == 0 and not state.is_terminal():
@@ -104,7 +101,6 @@ class Game:
         else:
             print("It's a DRAW!")
         
-            
     def play_with_bid(self, train : bool = False) -> None:
         belot_agent = BelotRLAgent(BelotDQN(106, 32), BelotStateEncoder())
         RLAgentPersist.load(belot_agent, "models/game/belot_model.pth")
@@ -115,6 +111,7 @@ class Game:
         else:
             RLAgentPersist.load(bid_agent, "models/bid/bid_model.pth")
         
+        players = [BidPlayer(0), BidAIPlayer(1, bid_agent, train), BidAIPlayer(2, bid_agent, train), BidAIPlayer(3, bid_agent, train)]
         deck = [Card(r, s) for s in SUITS for r in RANKS]
         random.shuffle(deck)
         hands = {i: sorted(deck[i*8:(i+1)*8], key=lambda c: c.id) for i in range(4)}
@@ -122,18 +119,9 @@ class Game:
         bid_player_idx = 0
         
         while BelotRules.get_legal_bids(bid_state.played_moves):
-            if bid_player_idx == 0:
-                print("Your hand (Player 0):", hands[0])
-                print("Available contracts: 0:AT, 1:NT, 2:♠, 3:♦, 4:♥, 5:♣, 6:Pass")
-                try:
-                    c_idx = int(input("Choose contract: "))
-                    contract = "Pass" if c_idx == 6 else BelotRules.CONTRACTS[c_idx]
-                except:
-                    contract = 'AT'
-                bid_state.played_moves += [contract]
-            else:
-                bid_state.played_moves += [bid_agent.get_action(bid_state, bid_player_idx)]
-                print(f"Player {bid_player_idx} bid {bid_state.played_moves[-1]}")
+            contract = players[bid_player_idx].get_action(bid_state)
+            bid_state.played_moves += [contract]
+            print(f"Player {bid_player_idx} bid {bid_state.played_moves[-1]}")
             bid_player_idx = (bid_player_idx + 1) % 4
                 
         contract = [b for b in bid_state.played_moves if b != "Pass"]

@@ -5,12 +5,12 @@ from abc import ABC, abstractmethod
 import torch.optim as optim
 
 class RLAgent(ABC):
-    def __init__(self, model : DQN, encoder : StateEncoder, epsilon=0.1, batch_size = 32):
+    def __init__(self, model : DQN, encoder : StateEncoder, epsilon=0.1):
         self.optimizer = optim.Adam(model.parameters(), lr=0.001)
         self.model = model
         self.encoder = encoder
         self.epsilon = epsilon
         
     @abstractmethod
-    def get_action(self, state : State, player_idx : int, training = False):
+    def get_action(self, state : State, player_idx : int, training : bool = False):
         pass
