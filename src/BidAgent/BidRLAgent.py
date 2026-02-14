@@ -3,12 +3,12 @@ import torch
 from BaseClasses.RLAgent import RLAgent
 from BaseClasses.State import State 
 from Belot.BelotRules import BelotRules
-from BidAgent.BidDQN import BidDQN
-from BidAgent.BidStateEncoder import BidStateEncoder
+from BaseClasses.DQN import DQN
+from BaseClasses.StateEncoder import StateEncoder
 
 class BidRLAgent(RLAgent):
-    def __init__(self):
-        super().__init__(BidDQN(44, 7), BidStateEncoder(), epsilon = 0.9)
+    def __init__(self, model : DQN, encoder : StateEncoder):
+        super().__init__(model, encoder, epsilon = 0.9)
         
     def get_action(self, state : State, player_idx : int, training : bool = False) -> str:
         legal_bids = BelotRules.get_legal_bids(state.played_moves)

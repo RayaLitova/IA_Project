@@ -4,6 +4,8 @@ from Belot.Card import RANKS, SUITS, Card
 from Belot.BelotRules import BelotRules
 from GameAgent import BelotRLAgent
 from BaseClasses.RLAgentPersist import RLAgentPersist
+from GameAgent.BelotDQN import BelotDQN
+from GameAgent.BelotStateEncoder import BelotStateEncoder
 
 app = Flask(__name__)
 
@@ -27,7 +29,7 @@ def process_data():
                     data['trick_starter_idx'], 
                     [data['team_scores']['team1'], data['team_scores']['team2']]
     )
-    agent = BelotRLAgent()
+    agent = BelotRLAgent(BelotDQN(106, 32), BelotStateEncoder())
     RLAgentPersist.load(agent, 'models/game/belot_model.pth')
     card = agent.get_action(state, data['player_idx'])
     return jsonify({'rank': RANKS.index(card.rank), 'suit': SUITS.index(card.suit)})

@@ -1,6 +1,5 @@
 import copy
 import random
-
 import numpy as np
 import torch
 from BaseClasses.RLAgentTrain import RLAgentTrain
@@ -9,12 +8,11 @@ from BaseClasses.State import State
 from Belot.Card import RANKS, SUITS, Card
 from Belot.BelotRules import BelotRules
 from GameAgent.BelotState import GameState
-from BidAgent.BidRLAgent import BidRLAgent
-from GameAgent.BelotRLAgent import BelotRLAgent
 from BaseClasses.RLTrainReward import RLTrainReward, RLTrainRewardFinal
+from BaseClasses.RLAgent import RLAgent
 
 class BidRLAgentTrain(RLAgentTrain): 
-    def __init__(self, bid_agent : BidRLAgent, belot_agent : BelotRLAgent, rewards : list[RLTrainReward], final_rewards : list[RLTrainRewardFinal]):
+    def __init__(self, bid_agent : RLAgent, belot_agent : RLAgent, rewards : list[RLTrainReward], final_rewards : list[RLTrainRewardFinal]):
         super().__init__(bid_agent, rewards, final_rewards)
         self.belot_agent = belot_agent
         

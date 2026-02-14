@@ -11,6 +11,10 @@ from BidAgent.BidRLAgentTrain import BidRLAgentTrain
 from GameAgent.BelotRLAgentTrain import BelotRLAgentTrain
 from GameAgent.BelotTrainRewards import BelotTrainFinalRewards, BelotTrainRewards
 from BidAgent.BidTrainRewards import BidTrainFinalRewards, BidTrainRewards
+from BidAgent.BidDQN import BidDQN
+from BidAgent.BidStateEncoder import BidStateEncoder
+from GameAgent.BelotDQN import BelotDQN
+from GameAgent.BelotStateEncoder import BelotStateEncoder
 
 class Game:
     def start(self):
@@ -45,7 +49,7 @@ class Game:
             print("Invalid choice. Run the script again.")
             
     def play(self, train : bool = False, hands : list[Card] = None, contract : str = None) -> None:
-        agent = BelotRLAgent()
+        agent = BelotRLAgent(BelotDQN(106, 32), BelotStateEncoder())
         if train:
             trainer = BelotRLAgentTrain(agent, BelotTrainRewards, BelotTrainFinalRewards)
             trainer.train(20000, "models/game/belot_model.pth")
@@ -102,9 +106,9 @@ class Game:
         
             
     def play_with_bid(self, train : bool = False) -> None:
-        belot_agent = BelotRLAgent()
+        belot_agent = BelotRLAgent(BelotDQN(106, 32), BelotStateEncoder())
         RLAgentPersist.load(belot_agent, "models/game/belot_model.pth")
-        bid_agent = BidRLAgent()
+        bid_agent = BidRLAgent(BidDQN(44, 7), BidStateEncoder())
         if train:
             trainer = BidRLAgentTrain(bid_agent, belot_agent, BidTrainRewards, BidTrainFinalRewards)
             trainer.train(20000, "models/bid/bid_model.pth")
