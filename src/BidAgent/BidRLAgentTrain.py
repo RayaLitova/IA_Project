@@ -56,17 +56,16 @@ class BidRLAgentTrain(RLAgentTrain):
             bid_curr_state_obj = copy.deepcopy(bid_state)
             
             contract = self.agent.get_action(bid_state, player, training=True)
-            
             forced_bid = False
             
-            # Phase 1 (0-4000): Force agent to bid (no Pass allowed)
-            if episode < 4000:
+            # Phase 1 (40%): Force agent to bid (no Pass allowed)
+            if episode < ((episodes / 100) * 40):
                 if not contract or contract == "Pass":
                     contract = random.choice(biddable_contracts)
                     forced_bid = True
             
-            # Phase 2 (4000-7000): Heavily penalize passing
-            elif episode < 7000:
+            # Phase 2 (70%): Heavily penalize passing
+            elif episode < ((episodes / 100) * 70):
                 if not contract or contract == "Pass":
                     penalty = -100
                     self.remember((bid_curr_state_obj, 0, penalty, player))
@@ -75,7 +74,7 @@ class BidRLAgentTrain(RLAgentTrain):
                         print(f"Episode {episode}/{episodes} | Agent passed (penalized) | Epsilon: {self.agent.epsilon:.3f}")
                     continue
             
-            # Phase 3 (7000+): Normal training with moderate pass penalty
+            # Phase 3 (70%+): Normal training with moderate pass penalty
             else:
                 if not contract or contract == "Pass":
                     penalty = -30
@@ -127,7 +126,7 @@ class BidRLAgentTrain(RLAgentTrain):
                 checkpoint_path = f"{save_path[:-4]}_ep{episode+1}.pth"
                 RLAgentPersist.save(self, checkpoint_path, episode+1)
         
-        avg_final_reward = sum(total_rewards[-1000:]) / min(len(total_rewards), 1000)
+        avg_final_reward = sum(total_rewards[-1000:]) / min(max(len(total_rewards), 1), 1000)
         
         print("\n" + "="*60)
         print("Training Complete!")
