@@ -12,12 +12,6 @@ class Card:
         self.suit = suit
         self.str_rep = f"{rank}{suit}"
         self.id = CARD_TO_ID[self.str_rep]
-
-    @staticmethod
-    def deal_deck(players_count : int) -> list[Card]:
-        deck = [Card(r, s) for s in SUITS for r in RANKS]
-        random.shuffle(deck)
-        return {i: sorted(deck[i*8:(i+1)*8], key=lambda c: c.id) for i in range(players_count)}
         
     def __repr__(self): return self.str_rep
     def __eq__(self, other): return self.id == other.id

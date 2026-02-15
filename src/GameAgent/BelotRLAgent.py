@@ -1,19 +1,19 @@
 import random
 import torch
 from BaseClasses.RLAgent import RLAgent
-from Belot.BelotRules import BelotRules
 from Belot.Card import Card
 from BaseClasses.State import State
 from BaseClasses.DQN import DQN
 from BaseClasses.StateEncoder import StateEncoder
 from Belot.BelotPlayRules import BelotPlayRules
+from BaseClasses.Rules import CardGameRules
 
 class BelotRLAgent(RLAgent):
     def __init__(self, model : DQN, encoder : StateEncoder):
         super().__init__(model, encoder, epsilon = 0.1)
         
     def get_action(self, state : State, player_idx : int, training : bool = False) -> Card:
-        legal_moves = BelotRules.get_legal_moves(state, BelotPlayRules)
+        legal_moves = state.rules.get_legal_moves(state, BelotPlayRules)
         if training and random.random() < self.epsilon:
             return random.choice(legal_moves)
 

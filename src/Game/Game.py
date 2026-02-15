@@ -1,26 +1,6 @@
-import time
-from BaseClasses.State import State
-from Belot.BelotRules import BelotRules
-from Belot.Card import RANKS, SUITS, Card
-from BidAgent.BidRLAgent import BidRLAgent
-from GameAgent.BelotRLAgent import BelotRLAgent
-from GameAgent.BelotState import GameState
-from BaseClasses.RLAgentPersist import RLAgentPersist
-from BidAgent.BidRLAgentTrain import BidRLAgentTrain
-from GameAgent.BelotRLAgentTrain import BelotRLAgentTrain
-from GameAgent.BelotTrainRewards import BelotTrainFinalRewards, BelotTrainRewards
-from BidAgent.BidTrainRewards import BidTrainFinalRewards, BidTrainRewards
-from BidAgent.BidDQN import BidDQN
-from BidAgent.BidStateEncoder import BidStateEncoder
-from GameAgent.BelotDQN import BelotDQN
-from GameAgent.BelotStateEncoder import BelotStateEncoder
-from Belot.BidPlayer import BidPlayer
-from BidAgent.BidAIPlayer import BidAIPlayer
-from GameAgent.BelotAIPlayer import BelotAIPlayer
-from Belot.BelotPlayer import BelotPlayer
-from Belot.BidRules import BidRules
 from Game.BelotPhase import BelotPhase
 from Game.BidPhase import BidPhase
+from Belot.BelotRules import BelotRules
 
 class Game:
     def start(self):
@@ -55,10 +35,15 @@ class Game:
             print("Invalid choice. Run the script again.")
             
     def play(self, train = False):
-        BelotPhase().play(train)
+        rules = BelotRules()
+        BelotPhase(rules).play(train)
     
     def play_with_bid(self, train = False):
-        hands, contract = BidPhase().play(train)
-        BelotPhase(hands, contract).play()
+        rules = BelotRules()
+        hands, contract = BidPhase(rules).play(train)
+        if not hands:
+            print("Everyone passed. Start a new game")
+            return
+        BelotPhase(rules, hands, contract).play()
             
         

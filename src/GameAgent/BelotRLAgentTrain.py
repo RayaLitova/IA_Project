@@ -3,11 +3,11 @@ import numpy as np
 from Belot.Card import Card
 import random
 import torch
-from Belot.BelotRules import BelotRules
 from Belot.Card import Card
 from GameAgent.BelotState import GameState
 from BaseClasses.RLAgentPersist import RLAgentPersist
 from BaseClasses.RLAgentTrain import RLAgentTrain
+from BaseClasses.Rules import CardGameRules
 
 class BelotRLAgentTrain(RLAgentTrain):
     def replay(self) -> None:
@@ -15,7 +15,6 @@ class BelotRLAgentTrain(RLAgentTrain):
             return
         
         batch = random.sample(self.memory, self.batch_size)
-        
         states = []
         targets = []
         
@@ -42,24 +41,24 @@ class BelotRLAgentTrain(RLAgentTrain):
         loss.backward()
         self.agent.optimizer.step()
         
-    def train(self, episodes : int, save_path : str) -> None:
+    def train(self, rules : CardGameRules, episodes : int, save_path : str) -> None:
         print(f"Training Neural Network for {episodes} games...")
         print("Team Setup: Player 0 (You) & Player 2 (Friendly AI) vs Player 1 & Player 3 (Opponents)")
         recent_scores = []
         
         for e in range(episodes):
-            hands = Card.deal_deck(BelotRules.players_count)
-            contract = random.choice(BelotRules.CONTRACTS)
-            state = GameState(contract, hands)
+            hands = rules.deal_deck()
+            contract = random.choice(rules.CONTRACTS)
+            state = GameState(rules, contract, hands)
             game_experiences = []
-            player_contributions = {i: 0 for i in range(BelotRules.players_count)}
+            player_contributions = {i: 0 for i in range(rules.players_count)}
             
             while not state.is_terminal():
                 pid = state.get_current_player()
                 curr_state_obj = copy.deepcopy(state)
                 card = self.agent.get_action(state, pid, training=True)
                 next_state, trick_rewards = state.apply_move(card)
-                player_contributions[pid] += trick_rewards[BelotRules.get_team(pid)]
+                player_contributions[pid] += trick_rewards[rules.get_team(pid)]
                 
                 game_experiences.append({
                     'state': curr_state_obj,
@@ -79,7 +78,7 @@ class BelotRLAgentTrain(RLAgentTrain):
             
             for exp in game_experiences:
                 pid = exp['player_idx']
-                team = BelotRules.get_team(pid)
+                team = rules.get_team(pid)
                 reward = exp['trick_rewards'][team] * 0.5
                 
                 card_played = [c for c in exp['state'].hands[pid] if c.id == exp['action_id']][0]

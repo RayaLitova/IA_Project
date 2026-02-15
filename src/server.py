@@ -22,7 +22,7 @@ def process_data():
         contract = SUITS[data['trump_suit']]
     else:
         contract = BelotRules.CONTRACTS[data['contract']]
-    state = GameState(contract, 
+    state = GameState(BelotRules(), contract, 
                     [process_cards(data['hand0']), process_cards(data['hand1']), process_cards(data['hand2']), process_cards(data['hand3'])],
                     process_cards(data['played_cards']), 
                     process_cards(data['current_trick']), 

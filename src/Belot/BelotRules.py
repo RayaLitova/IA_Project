@@ -1,6 +1,7 @@
 from Belot.Card import Card
+from BaseClasses.Rules import CardGameRules
 
-class BelotRules:
+class BelotRules(CardGameRules):
     CONTRACTS = ['AT', 'NT', '♠', '♥', '♦', '♣'] # All Trump, No Trump, Suits
     VALUES = {
         'NT': {'7':0, '8':0, '9':0, 'J':2, 'Q':3, 'K':4, '10':10, 'A':11},
@@ -11,34 +12,24 @@ class BelotRules:
         'AT': ['7', '8', 'Q', 'K', '10', 'A', '9', 'J']
     }
     players_count = 4
+    teams_count = 2
+    cards_per_player = 8
     
-    @staticmethod
-    def get_mode(contract : str, card_suit : str) -> str:
+    def get_mode(self, contract : str, card_suit : str) -> str:
         if contract == 'AT': return 'AT'
         if contract == 'NT': return 'NT'
         if contract == card_suit: return 'AT'
         return 'NT'
 
-    @staticmethod
-    def get_power(card : Card, contract : str) -> int:
-        mode = BelotRules.get_mode(contract, card.suit)
-        return BelotRules.ORDER[mode].index(card.rank)
+    def get_power(self, card : Card, contract : str) -> int:
+        mode = self.get_mode(contract, card.suit)
+        return self.ORDER[mode].index(card.rank)
 
-    @staticmethod
-    def get_points(card : Card, contract : str) -> int:
-        mode = BelotRules.get_mode(contract, card.suit)
-        return BelotRules.VALUES[mode][card.rank]
+    def get_points(self, card : Card, contract : str) -> int:
+        mode = self.get_mode(contract, card.suit)
+        return self.VALUES[mode][card.rank]
 
-    @staticmethod
-    def get_partner(player : int) -> int:
-        return (player + BelotRules.players_count//2) % BelotRules.players_count
-    
-    @staticmethod
-    def get_team(player : int) -> int:
-        return player % 2
-    
-    @staticmethod
-    def get_trick_winner(state) -> int:
+    def get_trick_winner(self, state) -> int:
         trick = state.played_moves
         if not trick: return None, None
         contract = state.contract
@@ -49,7 +40,7 @@ class BelotRules:
         
         for i in range(1, len(trick)):
             curr_card = trick[i]
-            curr_player = (trick_starter + i) % BelotRules.players_count
+            curr_player = (trick_starter + i) % self.players_count
             best_card = best_play
             
             is_curr_trump = (contract == 'AT') or (curr_card.suit == contract)
@@ -64,14 +55,13 @@ class BelotRules:
                 continue
             
             if curr_card.suit == best_card.suit:
-                if BelotRules.get_power(curr_card, contract) > BelotRules.get_power(best_card, contract):
+                if self.get_power(curr_card, contract) > self.get_power(best_card, contract):
                     best_play = curr_card
                     winner = curr_player
                         
         return (winner, best_play)
 
-    @staticmethod
-    def get_legal_moves(state, rules) -> list[Card]:
+    def get_legal_moves(self, state, rules) -> list[Card]:
         player = state.get_current_player()
         hand = state.hands[player]
         if not state.played_moves: 
@@ -83,9 +73,9 @@ class BelotRules:
         if hand_copy:
             return hand_copy
         return hand
-
-    def get_legal_bids(state, rules) -> list[str]:
-        bids = BelotRules.CONTRACTS
+    
+    def get_legal_bids(self, state, rules) -> list[str]:
+        bids = self.CONTRACTS
         for rule in rules:
             bids = rule.get_legal_moves(state, bids)
         return bids

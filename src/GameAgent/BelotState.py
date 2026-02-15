@@ -1,15 +1,13 @@
 import copy
 from BaseClasses.State import State
-from Belot.BelotRules import BelotRules
 from Belot.Card import Card
+from BaseClasses.Rules import CardGameRules
 
 class GameState(State):
-    def __init__(self, contract : str, hands : list[Card], played_cards : list[Card] = None, played_moves : list[Card] = None, starting_player : int = 0, scores : list[int] = None):
+    def __init__(self, rules : CardGameRules, contract : str, hands : list[Card], played_cards : list[Card] = None, played_moves : list[Card] = None, starting_player : int = 0, scores : list[int] = None):
+        super().__init__(rules, hands, starting_player, played_moves)
         self.contract = contract
-        self.hands = hands 
         self.played_cards = played_cards if played_cards else set()
-        self.played_moves = played_moves if played_moves else [] 
-        self.starting_player = starting_player
         self.scores = scores if scores else [0, 0] # [Team 0 (0&2), Team 1 (1&3)]    
 
     def is_terminal(self) -> bool:
@@ -33,6 +31,7 @@ class GameState(State):
         rewards = [0, 0]
         
         new_state = GameState(
+            self.rules,
             self.contract, 
             new_hands, 
             new_played, 
@@ -41,10 +40,10 @@ class GameState(State):
             new_scores
         )
         
-        if len(new_trick) == BelotRules.players_count:
-            winner_idx, _ = BelotRules.get_trick_winner(new_state)
-            points = sum(BelotRules.get_points(c, self.contract) for c in new_trick)
-            winning_team = BelotRules.get_team(winner_idx)
+        if len(new_trick) == self.rules.players_count:
+            winner_idx, _ = self.rules.get_trick_winner(new_state)
+            points = sum(self.rules.get_points(c, self.contract) for c in new_trick)
+            winning_team = self.rules.get_team(winner_idx)
             new_scores[winning_team] += points
             rewards[winning_team] += points 
             
@@ -55,6 +54,7 @@ class GameState(State):
             new_trick = []
         
         new_state = GameState(
+            self.rules,
             self.contract, 
             new_hands, 
             new_played, 

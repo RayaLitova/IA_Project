@@ -1,10 +1,11 @@
 from BaseClasses.Player import Player
 from BaseClasses.RLAgent import RLAgent
 from BaseClasses.State import State
+from BaseClasses.Rules import CardGameRules
 
 class BidAIPlayer(Player):
-    def __init__(self, index : int, agent : RLAgent, training : bool = False):
-        super().__init__(index)
+    def __init__(self, rules : CardGameRules, index : int, agent : RLAgent, training : bool = False):
+        super().__init__(rules, index)
         self.agent = agent
         self.training = training
         

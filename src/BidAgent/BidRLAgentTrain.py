@@ -6,10 +6,10 @@ from BaseClasses.RLAgentTrain import RLAgentTrain
 from BaseClasses.RLAgentPersist import RLAgentPersist
 from BaseClasses.State import State
 from Belot.Card import Card
-from Belot.BelotRules import BelotRules
 from GameAgent.BelotState import GameState
 from BaseClasses.RLTrainReward import RLTrainReward, RLTrainRewardFinal
 from BaseClasses.RLAgent import RLAgent
+from BaseClasses.Rules import CardGameRules
 
 class BidRLAgentTrain(RLAgentTrain): 
     def __init__(self, bid_agent : RLAgent, belot_agent : RLAgent, rewards : list[RLTrainReward], final_rewards : list[RLTrainRewardFinal]):
@@ -41,18 +41,18 @@ class BidRLAgentTrain(RLAgentTrain):
         loss.backward()
         self.agent.optimizer.step()
     
-    def train(self, episodes : int, save_path : str) -> None:
+    def train(self, rules : CardGameRules, episodes : int, save_path : str) -> None:
         print(f"Training Bid Neural Network for {episodes} games...")
         print("Starting fresh training with curriculum learning")
         
-        biddable_contracts = [c for c in BelotRules.CONTRACTS if c != "Pass"]
+        biddable_contracts = [c for c in rules.CONTRACTS if c != "Pass"]
         total_rewards = []
         
         for episode in range(episodes):
-            hands = Card.deal_deck(BelotRules.players_count)
-            player = random.randrange(0, BelotRules.players_count)
+            hands = rules.deal_deck()
+            player = random.randrange(0, rules.players_count)
             
-            bid_state = State(hands, player, ["Pass"] * BelotRules.players_count)
+            bid_state = State(rules, hands, player, ["Pass"] * rules.players_count)
             bid_curr_state_obj = copy.deepcopy(bid_state)
             
             contract = self.agent.get_action(bid_state, player, training=True)
@@ -84,7 +84,7 @@ class BidRLAgentTrain(RLAgentTrain):
             
             # Play the full game with the chosen contract
             try:
-                game_state = GameState(contract, hands)
+                game_state = GameState(rules, contract, hands)
                 
                 while not game_state.is_terminal():
                     current_player = game_state.get_current_player()
@@ -99,7 +99,7 @@ class BidRLAgentTrain(RLAgentTrain):
                 if forced_bid:
                     reward -= 20
                 
-                action_id = 6 if contract == "Pass" else BelotRules.CONTRACTS.index(contract)
+                action_id = 6 if contract == "Pass" else rules.CONTRACTS.index(contract)
                 self.remember((bid_curr_state_obj, action_id, reward, player))
                 
                 total_rewards.append(reward)

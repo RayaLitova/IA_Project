@@ -1,29 +1,21 @@
-from BidAgent.GamePhase import GamePhase
+from BaseClasses.GamePhase import GamePhase
 import time
-from BaseClasses.State import State
-from Belot.BelotRules import BelotRules
-from Belot.Card import RANKS, SUITS, Card
-from BidAgent.BidRLAgent import BidRLAgent
+from Belot.Card import Card
 from GameAgent.BelotRLAgent import BelotRLAgent
 from GameAgent.BelotState import GameState
 from BaseClasses.RLAgentPersist import RLAgentPersist
-from BidAgent.BidRLAgentTrain import BidRLAgentTrain
 from GameAgent.BelotRLAgentTrain import BelotRLAgentTrain
 from GameAgent.BelotTrainRewards import BelotTrainFinalRewards, BelotTrainRewards
-from BidAgent.BidTrainRewards import BidTrainFinalRewards, BidTrainRewards
-from BidAgent.BidDQN import BidDQN
-from BidAgent.BidStateEncoder import BidStateEncoder
 from GameAgent.BelotDQN import BelotDQN
 from GameAgent.BelotStateEncoder import BelotStateEncoder
-from Belot.BidPlayer import BidPlayer
-from BidAgent.BidAIPlayer import BidAIPlayer
 from GameAgent.BelotAIPlayer import BelotAIPlayer
 from Belot.BelotPlayer import BelotPlayer
-from Belot.BidRules import BidRules
+from BaseClasses.Rules import CardGameRules
 
 
 class BelotPhase(GamePhase):
-    def __init__(self, hands = None, contract = None):
+    def __init__(self, rules : CardGameRules, hands = None, contract = None):
+        super().__init__(rules)
         self.hands = hands
         self.contract = contract
         
@@ -31,27 +23,27 @@ class BelotPhase(GamePhase):
         hands = self.hands
         contract = self.contract
         agent = BelotRLAgent(BelotDQN(106, 32), BelotStateEncoder())
-        players = [BelotPlayer(0), BelotAIPlayer(1, agent, train), BelotAIPlayer(2, agent, train), BelotAIPlayer(3, agent, train)]
+        players = [BelotPlayer(self.rules, 0), BelotAIPlayer(self.rules, 1, agent, train), BelotAIPlayer(self.rules, 2, agent, train), BelotAIPlayer(self.rules, 3, agent, train)]
         
         if train:
             trainer = BelotRLAgentTrain(agent, BelotTrainRewards, BelotTrainFinalRewards)
-            trainer.train(20000, "models/game/belot_model.pth")
+            trainer.train(self.rules, 20000, "models/game/belot_model.pth")
         else:
             RLAgentPersist.load(agent, "models/game/belot_model.pth")
         
         if not hands:   
-            hands = Card.deal_deck(BelotRules.players_count)
+            hands = self.rules.deal_deck()
             
         if not contract:
             print("Your hand (Player 0):", hands[0])
             print("Available contracts: 0:AT, 1:NT, 2:♠, 3:♦, 4:♥, 5:♣")
             try:
                 c_idx = int(input("Choose contract: "))
-                contract = BelotRules.CONTRACTS[c_idx]
+                contract = self.rules.CONTRACTS[c_idx]
             except:
                 contract = 'AT'
         
-        state = GameState(contract, hands)
+        state = GameState(self.rules, contract, hands)
         
         print(f"\nContract: {contract}")
         print("You (Player 0) + Friendly AI (Player 2)")
