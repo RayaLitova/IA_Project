@@ -1,3 +1,4 @@
+import copy
 from BaseClasses.State import State
 from BaseClasses.RLTrainReward import RLTrainReward, RLTrainRewardFinal
 from Belot.BelotRules import BelotRules
@@ -47,7 +48,7 @@ class OpponentWinningReward(RLTrainReward):
         partner_idx = (player_idx + 2) % 4
         card_value = BelotRules.get_points(played_card, state.contract)
         
-        temp_state = state.copy()
+        temp_state = copy.copy(state)
         temp_state.played_moves = state.played_moves + [played_card]
         new_winner_idx, _ = BelotRules.get_trick_winner(temp_state)
         
@@ -70,7 +71,7 @@ class HighCardProtectionReward(RLTrainReward):
         has_protection = second_highest in state.hands[player_idx]
         partner_idx = (player_idx + 2) % 4
         
-        temp_state = state.copy()
+        temp_state = copy.copy(state)
         temp_state.played_moves = state.played_moves + [played_card]
         winner_idx, _ = BelotRules.get_trick_winner(temp_state)
         
