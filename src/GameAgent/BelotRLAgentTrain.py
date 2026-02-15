@@ -48,18 +48,18 @@ class BelotRLAgentTrain(RLAgentTrain):
         recent_scores = []
         
         for e in range(episodes):
-            hands = Card.deal_deck()
+            hands = Card.deal_deck(BelotRules.players_count)
             contract = random.choice(BelotRules.CONTRACTS)
             state = GameState(contract, hands)
             game_experiences = []
-            player_contributions = {i: 0 for i in range(4)}
+            player_contributions = {i: 0 for i in range(BelotRules.players_count)}
             
             while not state.is_terminal():
                 pid = state.get_current_player()
                 curr_state_obj = copy.deepcopy(state)
                 card = self.agent.get_action(state, pid, training=True)
                 next_state, trick_rewards = state.apply_move(card)
-                player_contributions[pid] += trick_rewards[pid % 2]
+                player_contributions[pid] += trick_rewards[BelotRules.get_team(pid)]
                 
                 game_experiences.append({
                     'state': curr_state_obj,
@@ -79,7 +79,7 @@ class BelotRLAgentTrain(RLAgentTrain):
             
             for exp in game_experiences:
                 pid = exp['player_idx']
-                team = pid % 2
+                team = BelotRules.get_team(pid)
                 reward = exp['trick_rewards'][team] * 0.5
                 
                 card_played = [c for c in exp['state'].hands[pid] if c.id == exp['action_id']][0]

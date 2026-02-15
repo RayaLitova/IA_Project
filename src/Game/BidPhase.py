@@ -33,7 +33,7 @@ class BidPhase(GamePhase):
             RLAgentPersist.load(bid_agent, "models/bid/bid_model.pth")
         
         players = [BidPlayer(0), BidAIPlayer(1, bid_agent, train), BidAIPlayer(2, bid_agent, train), BidAIPlayer(3, bid_agent, train)]
-        hands = Card.deal_deck()
+        hands = Card.deal_deck(BelotRules.players_count)
         bid_state = State(hands, 0, [])
         bid_player_idx = 0
         
@@ -41,7 +41,7 @@ class BidPhase(GamePhase):
             contract = players[bid_player_idx].get_action(bid_state)
             bid_state.played_moves += [contract]
             print(f"Player {bid_player_idx} bid {bid_state.played_moves[-1]}")
-            bid_player_idx = (bid_player_idx + 1) % 4
+            bid_player_idx = (bid_player_idx + 1) % BelotRules.players_count
                 
         contract = [b for b in bid_state.played_moves if b != "Pass"]
         if not contract:

@@ -41,12 +41,10 @@ class GameState(State):
             new_scores
         )
         
-        if len(new_trick) == 4:
+        if len(new_trick) == BelotRules.players_count:
             winner_idx, _ = BelotRules.get_trick_winner(new_state)
-            
             points = sum(BelotRules.get_points(c, self.contract) for c in new_trick)
-            
-            winning_team = winner_idx % 2
+            winning_team = BelotRules.get_team(winner_idx)
             new_scores[winning_team] += points
             rewards[winning_team] += points 
             

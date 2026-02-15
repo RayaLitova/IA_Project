@@ -8,7 +8,7 @@ class FinalScoresReward(RLTrainRewardFinal):
     def calc_reward(self, state : State, player_idx : int) -> float:
         final_scores = state.scores
         reward = 0
-        team = player_idx % 2
+        team = BelotRules.get_team(player_idx)
         
         if final_scores[0] > final_scores[1]:
             game_bonus = [100, -100]
@@ -29,7 +29,7 @@ class FinalScoresReward(RLTrainRewardFinal):
     
 class PartnerWinningReward(RLTrainReward):
     def calc_reward(self, state : State, player_idx : int, played_card) -> float:
-        partner_idx = (player_idx + 2) % 4
+        partner_idx = BelotRules.get_partner(player_idx)
         current_winner_idx, _ = BelotRules.get_trick_winner(state)
         
         if current_winner_idx == partner_idx:
@@ -45,7 +45,7 @@ class OpponentWinningReward(RLTrainReward):
         current_winner_idx, _ = BelotRules.get_trick_winner(state)
         if current_winner_idx == player_idx:
             return 0
-        partner_idx = (player_idx + 2) % 4
+        partner_idx = BelotRules.get_partner(player_idx)
         card_value = BelotRules.get_points(played_card, state.contract)
         
         temp_state = copy.copy(state)
@@ -69,7 +69,7 @@ class HighCardProtectionReward(RLTrainReward):
         
         second_highest = Card(rank=order[-2], suit=played_card.suit)
         has_protection = second_highest in state.hands[player_idx]
-        partner_idx = (player_idx + 2) % 4
+        partner_idx = BelotRules.get_partner(player_idx)
         
         temp_state = copy.copy(state)
         temp_state.played_moves = state.played_moves + [played_card]
@@ -101,7 +101,7 @@ class TrumpingPartnerReward(RLTrainReward):
             return 0
         
         current_winner_idx, _ = BelotRules.get_trick_winner(state)
-        partner_idx = (player_idx + 2) % 4
+        partner_idx = BelotRules.get_partner(player_idx)
         if current_winner_idx == partner_idx:
             return -20
         return 0

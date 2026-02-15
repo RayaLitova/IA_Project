@@ -6,7 +6,7 @@ class BidRuleRaise(PlayRule):
     def get_legal_moves(self, state : State, hand : list[str]) -> list[str]:
         current_bids = state.played_moves
         bids_count = len(current_bids)
-        if bids_count >= 4 and current_bids[bids_count - 3:] == ["Pass"] * 3:
+        if bids_count >= BelotRules.players_count and current_bids[bids_count - 3:] == ["Pass"] * 3:
             return []
         
         filtered_bids = [b for b in current_bids if b != "Pass"]

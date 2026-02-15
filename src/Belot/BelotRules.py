@@ -10,6 +10,7 @@ class BelotRules:
         'NT': ['7', '8', '9', 'J', 'Q', 'K', '10', 'A'],
         'AT': ['7', '8', 'Q', 'K', '10', 'A', '9', 'J']
     }
+    players_count = 4
     
     @staticmethod
     def get_mode(contract : str, card_suit : str) -> str:
@@ -30,7 +31,11 @@ class BelotRules:
 
     @staticmethod
     def get_partner(player : int) -> int:
-        return (player + 2) % 4
+        return (player + BelotRules.players_count//2) % BelotRules.players_count
+    
+    @staticmethod
+    def get_team(player : int) -> int:
+        return player % 2
     
     @staticmethod
     def get_trick_winner(state) -> int:
@@ -44,7 +49,7 @@ class BelotRules:
         
         for i in range(1, len(trick)):
             curr_card = trick[i]
-            curr_player = (trick_starter + i) % 4
+            curr_player = (trick_starter + i) % BelotRules.players_count
             best_card = best_play
             
             is_curr_trump = (contract == 'AT') or (curr_card.suit == contract)

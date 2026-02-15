@@ -40,7 +40,7 @@ class BelotPhase(GamePhase):
             RLAgentPersist.load(agent, "models/game/belot_model.pth")
         
         if not hands:   
-            hands = Card.deal_deck()
+            hands = Card.deal_deck(BelotRules.players_count)
             
         if not contract:
             print("Your hand (Player 0):", hands[0])

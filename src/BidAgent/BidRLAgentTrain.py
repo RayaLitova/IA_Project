@@ -49,10 +49,10 @@ class BidRLAgentTrain(RLAgentTrain):
         total_rewards = []
         
         for episode in range(episodes):
-            hands = Card.deal_deck()
-            player = random.randrange(0, 4)
+            hands = Card.deal_deck(BelotRules.players_count)
+            player = random.randrange(0, BelotRules.players_count)
             
-            bid_state = State(hands, player, ["Pass"] * 4)
+            bid_state = State(hands, player, ["Pass"] * BelotRules.players_count)
             bid_curr_state_obj = copy.deepcopy(bid_state)
             
             contract = self.agent.get_action(bid_state, player, training=True)
