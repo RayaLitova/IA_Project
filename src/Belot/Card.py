@@ -1,5 +1,4 @@
 from __future__ import annotations
-import random
 
 SUITS = ['♠', '♥', '♦', '♣'] # Spades, Hearts, Diamonds, Clubs
 RANKS = ['7', '8', '9', '10', 'J', 'Q', 'K', 'A']

@@ -6,7 +6,6 @@ from BaseClasses.State import State
 from BaseClasses.DQN import DQN
 from BaseClasses.StateEncoder import StateEncoder
 from Belot.BelotPlayRules import BelotPlayRules
-from BaseClasses.Rules import CardGameRules
 
 class BelotRLAgent(RLAgent):
     def __init__(self, model : DQN, encoder : StateEncoder):

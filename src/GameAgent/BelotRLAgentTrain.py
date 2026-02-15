@@ -1,9 +1,7 @@
 import copy
 import numpy as np
-from Belot.Card import Card
 import random
 import torch
-from Belot.Card import Card
 from GameAgent.BelotState import GameState
 from BaseClasses.RLAgentPersist import RLAgentPersist
 from BaseClasses.RLAgentTrain import RLAgentTrain

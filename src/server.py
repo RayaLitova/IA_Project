@@ -18,11 +18,12 @@ def process_cards(cards : list[str]) -> list[Card]:
 @app.route('/process', methods=['POST'])
 def process_data():
     data = request.json
+    rules = BelotRules()
     if data['contract'] == 2:
         contract = SUITS[data['trump_suit']]
     else:
-        contract = BelotRules.CONTRACTS[data['contract']]
-    state = GameState(BelotRules(), contract, 
+        contract = rules.CONTRACTS[data['contract']]
+    state = GameState(rules, contract, 
                     [process_cards(data['hand0']), process_cards(data['hand1']), process_cards(data['hand2']), process_cards(data['hand3'])],
                     process_cards(data['played_cards']), 
                     process_cards(data['current_trick']), 

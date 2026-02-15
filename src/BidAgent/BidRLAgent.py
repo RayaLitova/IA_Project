@@ -5,7 +5,6 @@ from BaseClasses.State import State
 from BaseClasses.DQN import DQN
 from BaseClasses.StateEncoder import StateEncoder
 from Belot.BidRules import BidRules
-from BaseClasses.Rules import CardGameRules
 
 class BidRLAgent(RLAgent):
     def __init__(self, model : DQN, encoder : StateEncoder):

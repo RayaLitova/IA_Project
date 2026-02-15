@@ -1,6 +1,5 @@
 from BaseClasses.GamePhase import GamePhase
 from BaseClasses.State import State
-from Belot.Card import Card
 from BidAgent.BidRLAgent import BidRLAgent
 from GameAgent.BelotRLAgent import BelotRLAgent
 from BaseClasses.RLAgentPersist import RLAgentPersist

@@ -1,6 +1,5 @@
 from BaseClasses.GamePhase import GamePhase
 import time
-from Belot.Card import Card
 from GameAgent.BelotRLAgent import BelotRLAgent
 from GameAgent.BelotState import GameState
 from BaseClasses.RLAgentPersist import RLAgentPersist

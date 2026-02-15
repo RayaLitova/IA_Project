@@ -5,7 +5,6 @@ import torch
 from BaseClasses.RLAgentTrain import RLAgentTrain
 from BaseClasses.RLAgentPersist import RLAgentPersist
 from BaseClasses.State import State
-from Belot.Card import Card
 from GameAgent.BelotState import GameState
 from BaseClasses.RLTrainReward import RLTrainReward, RLTrainRewardFinal
 from BaseClasses.RLAgent import RLAgent
