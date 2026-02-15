@@ -6,14 +6,14 @@ from Belot.Card import Card
 from BaseClasses.State import State
 from BaseClasses.DQN import DQN
 from BaseClasses.StateEncoder import StateEncoder
+from Belot.BelotPlayRules import BelotPlayRules
 
 class BelotRLAgent(RLAgent):
     def __init__(self, model : DQN, encoder : StateEncoder):
         super().__init__(model, encoder, epsilon = 0.1)
         
     def get_action(self, state : State, player_idx : int, training : bool = False) -> Card:
-        legal_moves = BelotRules.get_valid_moves(player_idx, state.hands[player_idx], state.starting_player, state.played_moves, state.contract)
-        
+        legal_moves = BelotRules.get_legal_moves(state, BelotPlayRules)
         if training and random.random() < self.epsilon:
             return random.choice(legal_moves)
 

@@ -32,8 +32,17 @@ class GameState(State):
         new_scores = list(self.scores)
         rewards = [0, 0]
         
+        new_state = GameState(
+            self.contract, 
+            new_hands, 
+            new_played, 
+            new_trick, 
+            next_starter, 
+            new_scores
+        )
+        
         if len(new_trick) == 4:
-            winner_idx, _ = BelotRules.get_trick_winner(next_starter, new_trick, self.contract)
+            winner_idx, _ = BelotRules.get_trick_winner(new_state)
             
             points = sum(BelotRules.get_points(c, self.contract) for c in new_trick)
             
@@ -46,7 +55,6 @@ class GameState(State):
                 rewards[winning_team] += 10
             
             new_trick = []
-            next_starter = winner_idx
         
         new_state = GameState(
             self.contract, 

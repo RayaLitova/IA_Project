@@ -5,13 +5,14 @@ from BaseClasses.State import State
 from Belot.BelotRules import BelotRules
 from BaseClasses.DQN import DQN
 from BaseClasses.StateEncoder import StateEncoder
+from Belot.BidRules import BidRules
 
 class BidRLAgent(RLAgent):
     def __init__(self, model : DQN, encoder : StateEncoder):
         super().__init__(model, encoder, epsilon = 0.9)
         
     def get_action(self, state : State, player_idx : int, training : bool = False) -> str:
-        legal_bids = BelotRules.get_legal_bids(state.played_moves)
+        legal_bids = BelotRules.get_legal_bids(state, BidRules)
         if not legal_bids: 
             return
         if training and random.random() < self.epsilon:

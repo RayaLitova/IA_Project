@@ -29,11 +29,7 @@ class BelotStateEncoder(StateEncoder):
 
         winner_vec = np.zeros(4)  # One-hot: which player is winning
         if state.played_moves:
-            winner_idx, _ = BelotRules.get_trick_winner(
-                state.starting_player,
-                state.played_moves, 
-                state.contract
-            )
+            winner_idx, _ = BelotRules.get_trick_winner(state)
             if winner_idx is not None:
                 winner_vec[winner_idx] = 1
 

@@ -1,4 +1,3 @@
-import random
 import time
 from BaseClasses.State import State
 from Belot.BelotRules import BelotRules
@@ -19,6 +18,7 @@ from Belot.BidPlayer import BidPlayer
 from BidAgent.BidAIPlayer import BidAIPlayer
 from GameAgent.BelotAIPlayer import BelotAIPlayer
 from Belot.BelotPlayer import BelotPlayer
+from Belot.BidRules import BidRules
 
 class Game:
     def start(self):
@@ -62,11 +62,8 @@ class Game:
         else:
             RLAgentPersist.load(agent, "models/game/belot_model.pth")
         
-        # todo
         if not hands:   
-            deck = [Card(r, s) for s in SUITS for r in RANKS]
-            random.shuffle(deck)
-            hands = {i: sorted(deck[i*8:(i+1)*8], key=lambda c: c.id) for i in range(4)}
+            hands = Card.deal_deck()
             
         if not contract:
             print("Your hand (Player 0):", hands[0])
@@ -112,13 +109,11 @@ class Game:
             RLAgentPersist.load(bid_agent, "models/bid/bid_model.pth")
         
         players = [BidPlayer(0), BidAIPlayer(1, bid_agent, train), BidAIPlayer(2, bid_agent, train), BidAIPlayer(3, bid_agent, train)]
-        deck = [Card(r, s) for s in SUITS for r in RANKS]
-        random.shuffle(deck)
-        hands = {i: sorted(deck[i*8:(i+1)*8], key=lambda c: c.id) for i in range(4)}
+        hands = Card.deal_deck()
         bid_state = State(hands, 0, [])
         bid_player_idx = 0
         
-        while BelotRules.get_legal_bids(bid_state.played_moves):
+        while BelotRules.get_legal_bids(bid_state, BidRules):
             contract = players[bid_player_idx].get_action(bid_state)
             bid_state.played_moves += [contract]
             print(f"Player {bid_player_idx} bid {bid_state.played_moves[-1]}")

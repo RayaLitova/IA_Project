@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from GameAgent.BelotState import GameState
 from Belot.Card import RANKS, SUITS, Card
 from Belot.BelotRules import BelotRules
-from GameAgent import BelotRLAgent
+from GameAgent.BelotRLAgent import BelotRLAgent
 from BaseClasses.RLAgentPersist import RLAgentPersist
 from GameAgent.BelotDQN import BelotDQN
 from GameAgent.BelotStateEncoder import BelotStateEncoder

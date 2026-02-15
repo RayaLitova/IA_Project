@@ -1,6 +1,6 @@
 import copy
 import numpy as np
-from Belot.Card import RANKS, SUITS, Card
+from Belot.Card import Card
 import random
 import torch
 from Belot.BelotRules import BelotRules
@@ -45,28 +45,20 @@ class BelotRLAgentTrain(RLAgentTrain):
     def train(self, episodes : int, save_path : str) -> None:
         print(f"Training Neural Network for {episodes} games...")
         print("Team Setup: Player 0 (You) & Player 2 (Friendly AI) vs Player 1 & Player 3 (Opponents)")
-        
-        deck = [Card(r, s) for s in SUITS for r in RANKS]
-  
         recent_scores = []
         
         for e in range(episodes):
-            random.shuffle(deck)
-            hands = {i: sorted(deck[i*8:(i+1)*8], key=lambda c: c.id) for i in range(4)}
+            hands = Card.deal_deck()
             contract = random.choice(BelotRules.CONTRACTS)
-            
             state = GameState(contract, hands)
             game_experiences = []
-            
             player_contributions = {i: 0 for i in range(4)}
             
             while not state.is_terminal():
                 pid = state.get_current_player()
                 curr_state_obj = copy.deepcopy(state)
-                
                 card = self.agent.get_action(state, pid, training=True)
                 next_state, trick_rewards = state.apply_move(card)
-                
                 player_contributions[pid] += trick_rewards[pid % 2]
                 
                 game_experiences.append({

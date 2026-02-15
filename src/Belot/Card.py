@@ -1,3 +1,6 @@
+from __future__ import annotations
+import random
+
 SUITS = ['♠', '♥', '♦', '♣'] # Spades, Hearts, Diamonds, Clubs
 RANKS = ['7', '8', '9', '10', 'J', 'Q', 'K', 'A']
 CARD_TO_ID = {f"{r}{s}": i for i, (s, r) in enumerate([(s, r) for s in SUITS for r in RANKS])}
@@ -10,6 +13,12 @@ class Card:
         self.str_rep = f"{rank}{suit}"
         self.id = CARD_TO_ID[self.str_rep]
 
+    @staticmethod
+    def deal_deck() -> list[Card]:
+        deck = [Card(r, s) for s in SUITS for r in RANKS]
+        random.shuffle(deck)
+        return {i: sorted(deck[i*8:(i+1)*8], key=lambda c: c.id) for i in range(4)}
+        
     def __repr__(self): return self.str_rep
     def __eq__(self, other): return self.id == other.id
     def __hash__(self): return self.id

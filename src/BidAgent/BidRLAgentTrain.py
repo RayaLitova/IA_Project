@@ -5,7 +5,7 @@ import torch
 from BaseClasses.RLAgentTrain import RLAgentTrain
 from BaseClasses.RLAgentPersist import RLAgentPersist
 from BaseClasses.State import State
-from Belot.Card import RANKS, SUITS, Card
+from Belot.Card import Card
 from Belot.BelotRules import BelotRules
 from GameAgent.BelotState import GameState
 from BaseClasses.RLTrainReward import RLTrainReward, RLTrainRewardFinal
@@ -45,15 +45,11 @@ class BidRLAgentTrain(RLAgentTrain):
         print(f"Training Bid Neural Network for {episodes} games...")
         print("Starting fresh training with curriculum learning")
         
-        deck = [Card(r, s) for s in SUITS for r in RANKS]
         biddable_contracts = [c for c in BelotRules.CONTRACTS if c != "Pass"]
-        
         total_rewards = []
         
         for episode in range(episodes):
-            random.shuffle(deck)
-            hands = {i: sorted(deck[i*8:(i+1)*8], key=lambda c: c.id) for i in range(4)}
-            
+            hands = Card.deal_deck()
             player = random.randrange(0, 4)
             
             bid_state = State(hands, player, ["Pass"] * 4)
